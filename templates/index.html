@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}GitHub Profile Generator - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-code me-3"></i>GitHub Profile Generator
+                </h1>
+                <p class="lead mb-4">
+                    Create professional developer profiles and portfolios with AI assistance. 
+                    Runs entirely locally for your privacy and security.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('profile_assistant') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user me-2"></i>Profile Generator
+                    </a>
+                    <a href="{{ url_for('proposal_assistant') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-file-alt me-2"></i>Portfolio Builder
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-user-edit fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Profile Generator</h5>
+                        <p class="card-text">
+                            Generate professional developer profiles from your GitHub projects. 
+                            Automatically extract skills, experience, and create compelling portfolio descriptions.
+                        </p>
+                        <a href="{{ url_for('profile_assistant') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-file-alt fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Portfolio Builder</h5>
+                        <p class="card-text">
+                            Create tailored portfolio content for your projects. Paste project descriptions and get 
+                            AI-generated content that showcases your skills and achievements.
+                        </p>
+                        <a href="{{ url_for('proposal_assistant') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-right me-2"></i>Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">100% Local & Private</h5>
+                        <p class="card-text">
+                            Everything runs on your computer. No data sent to external servers. 
+                            Your GitHub data and proposals stay completely private and secure.
+                        </p>
+                        <div class="text-muted">
+                            <i class="fas fa-check-circle me-2"></i>No cloud storage
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="mb-5">How It Works</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">1</span>
+                            </div>
+                            <h5>Connect GitHub</h5>
+                            <p class="text-muted">Provide your GitHub username or token to fetch your projects</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">2</span>
+                            </div>
+                            <h5>Generate Content</h5>
+                            <p class="text-muted">AI analyzes your projects and creates professional content</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">3</span>
+                            </div>
+                            <h5>Copy & Use</h5>
+                            <p class="text-muted">Copy the generated content and use it in your portfolio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Setup Instructions -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>Quick Setup
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ol class="mb-0">
+                            <li class="mb-2">Copy <code>user_config.env</code> to <code>my_config.env</code></li>
+                            <li class="mb-2">Add your GitHub token and OpenAI API key to <code>my_config.env</code></li>
+                            <li class="mb-2">Run <code>python app.py</code> to start the application</li>
+                            <li class="mb-2">Open <code>http://localhost:5001</code> in your browser</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

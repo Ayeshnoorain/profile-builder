@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Generator - GitHub Profile Generator{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-user-edit me-3"></i>Profile Generator
+                </h1>
+                <p class="lead text-muted">
+                    Generate professional developer profiles from your GitHub projects
+                </p>
+            </div>
+
+            <!-- GitHub Connection Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fab fa-github me-2"></i>GitHub Connection
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="githubUsername" class="form-label">GitHub Username</label>
+                                <input type="text" class="form-control" id="githubUsername" 
+                                       placeholder="your-username" required>
+                                <div class="form-text">Your public GitHub username</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="githubToken" class="form-label">GitHub Token (Optional)</label>
+                                <input type="password" class="form-control" id="githubToken" 
+                                       placeholder="ghp_xxxxxxxxxxxx">
+                                <div class="form-text">
+                                    <a href="https://github.com/settings/tokens" target="_blank">
+                                        Get token here
+                                    </a> for private repos
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="maxRepos" class="form-label">Maximum Repositories</label>
+                            <select class="form-select" id="maxRepos">
+                                <option value="5">5 repositories</option>
+                                <option value="10" selected>10 repositories</option>
+                                <option value="15">15 repositories</option>
+                                <option value="20">20 repositories</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic me-2"></i>Generate Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center d-none">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted">Analyzing your GitHub projects...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="d-none">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>Generated Profile Content
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="copyAllContent()">
+                            <i class="fas fa-copy me-1"></i>Copy All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Profile Title -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">Profile Title</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <span id="profileTitle">Loading...</span>
+                                <button class="btn btn-sm btn-outline-secondary float-end" 
+                                        onclick="copyToClipboard(document.getElementById('profileTitle').textContent)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Overview -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">Overview</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="profileOverview">Loading...</div>
+                                <button class="btn btn-sm btn-outline-secondary float-end" 
+                                        onclick="copyToClipboard(document.getElementById('profileOverview').textContent)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">Skills</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="profileSkills">Loading...</div>
+                                <button class="btn btn-sm btn-outline-secondary float-end" 
+                                        onclick="copyToClipboard(document.getElementById('profileSkills').textContent)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Portfolio Projects -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">Portfolio Projects</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="portfolioProjects">Loading...</div>
+                                <button class="btn btn-sm btn-outline-secondary float-end" 
+                                        onclick="copyToClipboard(document.getElementById('portfolioProjects').textContent)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Self-Introduction Transcription -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-microphone me-2"></i>Self-Introduction Transcription
+                            </h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="alert alert-info mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Record this 2-minute introduction and send it to recruiters!</strong>
+                                </div>
+                                <div id="transcription" style="white-space: pre-line;">Loading...</div>
+                                <button class="btn btn-sm btn-outline-secondary float-end" 
+                                        onclick="copyToClipboard(document.getElementById('transcription').textContent)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#profileForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const username = $('#githubUsername').val();
+        const token = $('#githubToken').val();
+        const maxRepos = $('#maxRepos').val();
+        
+        if (!username) {
+            showAlert('Please enter your GitHub username', 'warning');
+            return;
+        }
+        
+        // Show loading state
+        $('#loadingState').removeClass('d-none');
+        $('#resultsSection').addClass('d-none');
+        
+        // Make API call
+        $.ajax({
+            url: '/api/profile/generate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                github_username: username,
+                github_token: token,
+                max_repos: maxRepos
+            }),
+            success: function(response) {
+                $('#loadingState').addClass('d-none');
+                
+                console.log('API Response:', response); // Debug log
+                console.log('Token provided:', token ? 'Yes' : 'No'); // Debug token
+                console.log('Token length:', token ? token.length : 0); // Debug token length
+                
+                if (response.success && response.profile) {
+                    // Display real generated content
+                    $('#profileTitle').text(response.profile.title);
+                    $('#profileOverview').html(response.profile.overview);
+                    $('#profileSkills').html(response.profile.skills);
+                    $('#portfolioProjects').html(response.profile.portfolio_projects);
+                    $('#transcription').text(response.profile.transcription);
+                    
+                    $('#resultsSection').removeClass('d-none');
+                    showAlert(`Profile generated successfully! Analyzed ${response.analysis.total_repos} repositories.`, 'success');
+                } else {
+                    console.log('Response not successful:', response); // Debug log
+                    showAlert('Failed to generate profile content', 'warning');
+                }
+            },
+            error: function(xhr) {
+                $('#loadingState').addClass('d-none');
+                let error = xhr.responseJSON?.error || 'An error occurred';
+                
+                // Provide helpful error messages
+                if (error.includes('rate limit')) {
+                    error = 'GitHub API rate limit exceeded. Please add a GitHub token or wait an hour. You can get a token from: https://github.com/settings/tokens';
+                } else if (error.includes('404')) {
+                    error = 'GitHub user not found. Please check the username and try again.';
+                } else if (error.includes('403')) {
+                    error = 'Access denied. The repository might be private. Please add a GitHub token.';
+                }
+                
+                showAlert(error, 'danger');
+            }
+        });
+    });
+});
+
+function copyAllContent() {
+    const title = document.getElementById('profileTitle').textContent;
+    const overview = document.getElementById('profileOverview').textContent;
+    const skills = document.getElementById('profileSkills').textContent;
+    const projects = document.getElementById('portfolioProjects').textContent;
+    const transcription = document.getElementById('transcription').textContent;
+    
+    const allContent = `PROFILE TITLE:\n${title}\n\nOVERVIEW:\n${overview}\n\nSKILLS:\n${skills}\n\nPORTFOLIO PROJECTS:\n${projects}\n\nSELF-INTRODUCTION TRANSCRIPTION:\n${transcription}`;
+    
+    copyToClipboard(allContent);
+}
+</script>
+{% endblock %} 

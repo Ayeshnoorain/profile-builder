@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio Builder - GitHub Profile Generator{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-file-alt me-3"></i>Portfolio Builder
+                </h1>
+                <p class="lead text-muted">
+                    Generate tailored portfolio content for your projects using AI
+                </p>
+            </div>
+
+            <!-- Job Description Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-project-diagram me-2"></i>Project Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="proposalForm">
+                        <div class="mb-3">
+                            <label for="jobDescription" class="form-label">Project Description</label>
+                            <textarea class="form-control" id="jobDescription" rows="8" 
+                                      placeholder="Paste the project description here..." required></textarea>
+                            <div class="form-text">
+                                Copy and paste the complete project description or requirements
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="proposalTone" class="form-label">Content Style</label>
+                                <select class="form-select" id="proposalTone">
+                                    <option value="professional">Professional</option>
+                                    <option value="friendly">Friendly</option>
+                                    <option value="concise">Concise</option>
+                                    <option value="expert">Expert</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="proposalLength" class="form-label">Content Length</label>
+                                <select class="form-select" id="proposalLength">
+                                    <option value="short">Short (2-3 paragraphs)</option>
+                                    <option value="medium" selected>Medium (4-5 paragraphs)</option>
+                                    <option value="long">Long (6+ paragraphs)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userProfile" class="form-label">Your Profile Summary (Optional)</label>
+                            <textarea class="form-control" id="userProfile" rows="4" 
+                                      placeholder="Brief description of your experience and skills..."></textarea>
+                            <div class="form-text">
+                                This helps tailor the proposal to your background
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic me-2"></i>Generate Content
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center d-none">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted">Analyzing project requirements and generating content...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="d-none">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>Generated Content
+                        </h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary me-2" onclick="regenerateProposal()">
+                                <i class="fas fa-redo me-1"></i>Regenerate
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="copyProposal()">
+                                <i class="fas fa-copy me-1"></i>Copy Content
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Project Analysis</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="jobAnalysis">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Generated Proposal</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="generatedProposal">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Key Points Highlighted</h6>
+                            <div class="border rounded p-3 bg-light">
+                                <div id="keyPoints">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#proposalForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const jobDescription = $('#jobDescription').val();
+        const tone = $('#proposalTone').val();
+        const length = $('#proposalLength').val();
+        const userProfile = $('#userProfile').val();
+        
+        if (!jobDescription) {
+            showAlert('Please enter the job description', 'warning');
+            return;
+        }
+        
+        // Show loading state
+        $('#loadingState').removeClass('d-none');
+        $('#resultsSection').addClass('d-none');
+        
+        // Make API call
+        $.ajax({
+            url: '/api/proposal/generate',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                job_description: jobDescription,
+                tone: tone,
+                length: length,
+                user_profile: userProfile
+            }),
+            success: function(response) {
+                $('#loadingState').addClass('d-none');
+                
+                // For now, show placeholder content
+                $('#jobAnalysis').html(`
+                    <strong>Job Type:</strong> Web Development<br>
+                    <strong>Required Skills:</strong> React, Node.js, MongoDB<br>
+                    <strong>Project Duration:</strong> 2-3 weeks<br>
+                    <strong>Budget Range:</strong> $500-$1000
+                `);
+                
+                $('#generatedProposal').html(`
+                    <p>Hello! I've reviewed your project requirements and I'm excited about the opportunity to work on this web development project.</p>
+                    
+                    <p>With my experience in React, Node.js, and MongoDB, I can deliver a high-quality solution that meets your specifications. I've successfully completed similar projects and understand the importance of clean, maintainable code and timely delivery.</p>
+                    
+                    <p>Here's what I can offer:</p>
+                    <ul>
+                        <li>Responsive React frontend with modern UI/UX</li>
+                        <li>Robust Node.js backend with RESTful API</li>
+                        <li>MongoDB database design and optimization</li>
+                        <li>Comprehensive testing and documentation</li>
+                    </ul>
+                    
+                    <p>I'm available to start immediately and can complete this project within your timeline. I'm committed to regular communication and will provide progress updates throughout the development process.</p>
+                    
+                    <p>Would you like to discuss the project details further? I'm happy to answer any questions you may have.</p>
+                `);
+                
+                $('#keyPoints').html(`
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>✅ Addressed Requirements:</strong>
+                            <ul class="mb-0">
+                                <li>React frontend mentioned</li>
+                                <li>Node.js backend specified</li>
+                                <li>MongoDB database included</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>✅ Professional Elements:</strong>
+                            <ul class="mb-0">
+                                <li>Clear value proposition</li>
+                                <li>Timeline commitment</li>
+                                <li>Communication promise</li>
+                            </ul>
+                        </div>
+                    </div>
+                `);
+                
+                $('#resultsSection').removeClass('d-none');
+                showAlert('Proposal generated successfully!', 'success');
+            },
+            error: function(xhr) {
+                $('#loadingState').addClass('d-none');
+                const error = xhr.responseJSON?.error || 'An error occurred';
+                showAlert(error, 'danger');
+            }
+        });
+    });
+});
+
+function copyProposal() {
+    const proposal = document.getElementById('generatedProposal').textContent;
+    copyToClipboard(proposal);
+}
+
+function regenerateProposal() {
+    $('#proposalForm').submit();
+}
+</script>
+{% endblock %} 
